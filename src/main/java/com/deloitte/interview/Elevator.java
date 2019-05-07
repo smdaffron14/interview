@@ -3,6 +3,13 @@ package com.deloitte.interview;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class represents an elevator bearing a LinkedList of
+ * floor which it serves, as well as an queue of floor stop
+ * requests
+ * 
+ * @author MD
+ */
 public class Elevator {
 	private Floor currentFloor;
 	private List<Integer> requests = new ArrayList<>();

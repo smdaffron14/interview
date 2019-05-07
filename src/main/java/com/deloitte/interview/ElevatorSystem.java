@@ -4,7 +4,7 @@ package com.deloitte.interview;
  * A wrapper class that encapsulates all {@link Elevator}s in the
  * system. (Currently one for this example)
  * 
- * @author Matt Daffron
+ * @author MD
  */
 public class ElevatorSystem {
 

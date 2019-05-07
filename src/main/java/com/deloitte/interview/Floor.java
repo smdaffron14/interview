@@ -2,6 +2,12 @@ package com.deloitte.interview;
 
 import com.deloitte.interview.Floor;
 
+/**
+ * This class is a doubly-linked list of Floors leveraged in
+ * the {@link Elevator} class.
+ * 
+ * @author MD
+ */
 public class Floor {
 
 	private int number;
