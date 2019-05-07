@@ -22,6 +22,53 @@ public class Elevator {
 		}
 	}
 
+	public Floor getCurrentFloor() {
+		return currentFloor;
+	}
+
+	public boolean isRunning() {
+		return running;
+	}
+	
+	/**
+	 * This simple method adds the requested floor to the end of the queue. A strong
+	 * candidate might elaborate on some logic to dynamically insert a new request
+	 * at a more optimal point in the queue. (e.g. insert a new floor while the
+	 * elevator is en-route to a nearby floor)
+	 */
+	public void addFloorRequest(int to) {
+		requests.add(to);
+
+		// Start elevator if it is not already running
+		if (!running) {
+			run();
+		}
+	}
+	
+	/**
+	 * Gets the last floor stop requested for this elevator
+	 */
+	public int getLastRequestedFloor() {
+		return requests.get(requests.size() - 1);
+	}
+
+	/**
+	 * Starts the elevator traversal process. Allows the elevator to rest (remain at
+	 * current floor) when no requests are active.
+	 */
+	public void run() {
+		while (requests != null && requests.size() > 0) {
+			running = true;
+
+			// pull from front of queue
+			int nextStop = requests.remove(0);
+			travelToFloor(nextStop);
+		}
+
+		// We've processed all floor requests. Let elevator rest
+		running = false;
+	}
+	
 	private void initFloor(Floor floor) {
 		if (currentFloor == null) {
 			currentFloor = floor;
@@ -72,49 +119,5 @@ public class Elevator {
 	
 	private void close() {
 		System.out.println("Door is closing");
-	}
-
-	public Floor getCurrentFloor() {
-		return currentFloor;
-	}
-
-	public boolean isRunning() {
-		return running;
-	}
-	
-	/**
-	 * This simple method adds the requested floor to the end of the queue. A strong
-	 * candidate might elaborate on some logic to dynamically insert a new request
-	 * at a more optimal point in the queue. (e.g. insert a new floor while the
-	 * elevator is en-route to a nearby floor)
-	 */
-	public void addFloorRequest(int to) {
-		requests.add(to);
-
-		// Start elevator if it is not already running
-		if (!running) {
-			run();
-		}
-	}
-	
-	public int getLastRequestedFloor() {
-		return requests.get(requests.size() - 1);
-	}
-
-	/**
-	 * Starts the elevator traversal process. Allows the elevator to rest (remain at
-	 * current floor) when no requests are active.
-	 */
-	public void run() {
-		while (requests != null && requests.size() > 0) {
-			running = true;
-
-			// pull from front of queue
-			int nextStop = requests.remove(0);
-			travelToFloor(nextStop);
-		}
-
-		// We've processed all floor requests. Let elevator rest
-		running = false;
 	}
 }
