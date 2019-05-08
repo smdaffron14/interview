@@ -1,8 +1,11 @@
 package com.deloitte.interview;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * A wrapper class that encapsulates all {@link Elevator}s in the
- * system. (Currently one for this example)
+ * system. (Currently two for this example)
  * 
  * @author MD
  */
@@ -10,6 +13,9 @@ public class ElevatorSystem {
 
 	private Elevator elevatorA;
 	private Elevator elevatorB;
+	
+	ExecutorService serviceA = Executors.newSingleThreadExecutor();
+	ExecutorService serviceB = Executors.newSingleThreadExecutor();
 
 	ElevatorSystem(int numberOfFloors) {
 		// Both elevators serve all floors
@@ -18,33 +24,53 @@ public class ElevatorSystem {
 	}
 
 	/**
-	 * Initiates a floor request to the elevator(s)
-	 * 
-	 * @param destinationFloorNumber
+	 * Initiates a floor request to the elevator(s) based on which one is closest
+	 * to the desired floor
 	 */
-	public void call(int destinationFloorNumber) {
+	public void call(int from, int to) {
+		int distanceA = Math.abs(elevatorA.getCurrentFloor() - from);
+		int distanceB = Math.abs(elevatorB.getCurrentFloor() - from);
+
+		// Determine which elevator is currently closest to the 
+		// requested floor
+		int shortestDistance = Math.min(distanceA, distanceB);
+
+		if (shortestDistance == distanceA) {
+			// Send two floor requests, one for pickup, one for drop-off
+			elevatorA.addFloorRequest(elevatorA.getFloorByNumber(from),
+					new StopRequest(RequestType.ENTER));
+			elevatorA.addFloorRequest(elevatorA.getFloorByNumber(to),
+					new StopRequest(RequestType.EXIT));
+		} else {
+			// Send two floor requests, one for pickup, one for drop-off
+			elevatorB.addFloorRequest(elevatorB.getFloorByNumber(from),
+					new StopRequest(RequestType.ENTER));
+						
+			elevatorB.addFloorRequest(elevatorB.getFloorByNumber(to),
+					new StopRequest(RequestType.EXIT));
+		}
+	}
+	
+	/**
+	 * Initiates a separate thread for each elevator so that they may run
+	 * and process floor requests in parallel
+	 */
+	public void start() {
 		
-		if (!elevatorA.isRunning()) {
-			elevatorA.addFloorRequest(destinationFloorNumber);
-		}
-		else if (!elevatorB.isRunning()) {
-			elevatorB.addFloorRequest(destinationFloorNumber);
-		}
-		else {
-			// Both elevators are running, determine which elevator
-			// is going to be closest to the requested floor
-			int distanceA = Math.abs(elevatorA.getLastRequestedFloor() 
-					- destinationFloorNumber);
-			int distanceB = Math.abs(elevatorB.getLastRequestedFloor() 
-					- destinationFloorNumber);
-			
-			int shortestDistance = Math.min(distanceA, distanceB);
-			
-			if (shortestDistance == distanceA) {
-				elevatorA.addFloorRequest(destinationFloorNumber);
-			} else {
-				elevatorB.addFloorRequest(destinationFloorNumber);
-			}
-		}
+		Runnable elevatorAProcess = () -> {
+			elevatorA.run();
+		};
+
+		Runnable elevatorBProcess = () -> {
+			elevatorB.run();
+		};
+		
+		serviceA.execute(elevatorAProcess);
+		serviceB.execute(elevatorBProcess);
+	}
+	
+	public void stop() {
+		serviceA.shutdown();
+		serviceB.shutdown();
 	}
 }

@@ -2,105 +2,110 @@ package com.deloitte.interview;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * This class represents an elevator bearing a LinkedList of
- * floor which it serves, as well as an queue of floor stop
+ * This class represents an elevator bearing a Map of
+ * floors which it serves and its related active floor stop
  * requests
  * 
  * @author MD
  */
 public class Elevator {
-	private Floor currentFloor;
-	private List<Integer> requests = new ArrayList<>();
-	private boolean running = false;
+	private static final int MAX_RIDERS = 5;
+	
+	private Map<Floor, List<StopRequest>> floorsToRequestsMap = new ConcurrentHashMap<>();
+	private int currentFloor = 1; // start on the first floor
+	private int riderCount = 0;
+	
+	private int maxFloor;
 
 	public Elevator(int floorCount) {
 		for (int i = 1; i <= floorCount; i++) {
 			Floor floor = new Floor(i);
-			initFloor(floor);
+			floorsToRequestsMap.put(floor, new ArrayList<>());
 		}
+		maxFloor = floorCount;
 	}
 
-	public Floor getCurrentFloor() {
+	/**
+	 * Returns the current floor of the elevator
+	 */
+	public int getCurrentFloor() {
 		return currentFloor;
 	}
 
-	public boolean isRunning() {
-		return running;
+	/**
+	 * This method associates a new stop request to the specified floor.
+	 * This will tell the elevator to stop and open its doors when it reaches
+	 * the floor
+	 */
+	public void addFloorRequest(Floor floor, StopRequest request) {
+		floorsToRequestsMap.get(floor).add(request);
 	}
 	
 	/**
-	 * This simple method adds the requested floor to the end of the queue. A strong
-	 * candidate might elaborate on some logic to dynamically insert a new request
-	 * at a more optimal point in the queue. (e.g. insert a new floor while the
-	 * elevator is en-route to a nearby floor)
+	 * Returns a {@link Floor} for the given floor number
 	 */
-	public void addFloorRequest(int to) {
-		requests.add(to);
-
-		// Start elevator if it is not already running
-		if (!running) {
-			run();
-		}
-	}
-	
-	/**
-	 * Gets the last floor stop requested for this elevator
-	 */
-	public int getLastRequestedFloor() {
-		return requests.get(requests.size() - 1);
+	public synchronized Floor getFloorByNumber(int number) {
+		return floorsToRequestsMap.keySet().stream()
+			.filter(f -> f.getNumber() == number)
+			.findFirst()
+			.get();
 	}
 
 	/**
-	 * Starts the elevator traversal process. Allows the elevator to rest (remain at
-	 * current floor) when no requests are active.
+	 * Starts the elevator traversal process by going up to start
+	 * then traversing back down.
 	 */
 	public void run() {
-		while (requests != null && requests.size() > 0) {
-			running = true;
-
-			// pull from front of queue
-			int nextStop = requests.remove(0);
-			travelToFloor(nextStop);
+		while (true) {
+			for (int i = currentFloor; i <= maxFloor; i++) {
+				currentFloor = i;
+				stopAtFloor();
+			}
+			// Now traverse back down
+			for (int i = currentFloor; i >= 1; i--) {
+				currentFloor = i;
+				stopAtFloor();
+			}
 		}
-
-		// We've processed all floor requests. Let elevator rest
-		running = false;
 	}
 	
-	private void initFloor(Floor floor) {
-		if (currentFloor == null) {
-			currentFloor = floor;
-		} else {
-			Floor existingFloor = currentFloor;
-			while (existingFloor.hasNext()) {
-				existingFloor = existingFloor.next();
-			}
+	private void stopAtFloor() {
+		List<StopRequest> stopsFulfilled = new ArrayList<>();
 
-			// Add to the end of the floors linked list
-			existingFloor.setNext(floor);
+		List<StopRequest> stopsRequested = floorsToRequestsMap
+				.get(getFloorByNumber(currentFloor));
+		
+		if (stopsRequested.isEmpty()) {
+			// Nothing to see here, folks
+			return;
 		}
-	}
-
-	/**
-	 * Traverse the doubly-linked list of floors until we are at the right one
-	 */
-	private void travelToFloor(int to) {
-		int currentFloorNumber = currentFloor.getNumber();
-
-		if (to > currentFloorNumber) {
-			while (currentFloor.getNumber() != to) {
-				currentFloor = currentFloor.next();
+		
+		stopsRequested.stream().forEach(request -> {
+			switch (request.getType()) {
+			case ENTER: 
+				// Only pick up rider if he can fit
+				if (riderCount < MAX_RIDERS) {
+					openAndCloseDoor();
+					riderCount++;
+					stopsFulfilled.add(request);
+				}
+				break;
+			case EXIT:
+				openAndCloseDoor();
+				riderCount--;
+				stopsFulfilled.add(request);
+				break;
 			}
-		} else if (to < currentFloorNumber) {
-			while (currentFloor.getNumber() != to) {
-				currentFloor = currentFloor.prev();
-			}
-		}
-		openAndCloseDoor();
+		});
+		
+		// Remove the stop requests that we have fulfilled
+		stopsRequested.removeAll(stopsFulfilled);
 	}
-
+	
 	private void openAndCloseDoor() {
 		open();
 		try {
@@ -114,7 +119,7 @@ public class Elevator {
 	private void open() {
 		System.out.println(String.format(
 				"This is floor %s. Door is opening", 
-				currentFloor.getNumber()));
+				currentFloor));
 	}
 	
 	private void close() {
