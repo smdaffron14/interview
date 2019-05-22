@@ -1,7 +1,9 @@
 package com.deloitte.interview.solution.simple;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class implements a simple solution to the
@@ -11,12 +13,15 @@ import java.util.List;
  */
 public class Elevator {
 	private List<Floor> floors;
+	private Map<Integer, Direction> stops;
 	private int numFloors;
 	
 	private boolean doRun = false;
 
 	public Elevator(int numFloors) {
 		floors = new ArrayList<>();
+		stops = new HashMap<>();
+		
 		this.numFloors = numFloors;
 
 		for (int i = 0; i < this.numFloors; i++) {
@@ -25,8 +30,8 @@ public class Elevator {
 		}
 	}
 
-	public void addFloorStop(int floorNumber) {
-		floors.get(floorNumber).setStopRequested(true);
+	public void addFloorStop(int floorNumber, Direction direction) {
+		stops.put(floorNumber, direction);
 	}
 	
 	private void stopAtFloor(int floorNumber) {
@@ -34,7 +39,7 @@ public class Elevator {
 				floorNumber));
 		System.out.println("Closing doors.");
 		
-		floors.get(floorNumber).setStopRequested(false);
+		stops.remove(floorNumber);
 	}
 	
 	public void run() {
@@ -43,21 +48,27 @@ public class Elevator {
 		while (doRun) {
 			System.out.println("Going up!");
 			for (int i = 0; i < numFloors; i++) {
-				if (floors.get(i).isStopRequested()) {
+				if (Direction.UP == stops.get(i)) {
 					stopAtFloor(i);
 				}
 			}
 
 			System.out.println("Going down!");
 			for (int i = numFloors - 1; i >= 0; i--) {
-				if (floors.get(i).isStopRequested()) {
+				if (Direction.DOWN == stops.get(i)) {
 					stopAtFloor(i);
 				}
 			}
+			doRun = stops != null && stops.size() > 0;
 		}
 	}
 	
 	public void stop() {
 		doRun = false;
+	}
+	
+	public enum Direction {
+		UP,
+		DOWN,
 	}
 }

@@ -1,5 +1,7 @@
 package com.deloitte.interview.solution.simple;
 
+import com.deloitte.interview.solution.simple.Elevator.Direction;
+
 /**
  * Driver code to instantiate simple solution
  * to Elevator Conundrum CDT interview problem
@@ -10,29 +12,22 @@ public class App {
 	public static void main(String[] args) throws InterruptedException {
 		Elevator elevator = new Elevator(18);
 		
-		// Execute the elevator on a separate thread
-		// so new floor requests can be enqueued while
-		// the elevator is in motion
-		Runnable elevatorRunnable = new Runnable() {
-			@Override
-			public void run() {
-				elevator.run();
-			}
-		};
-		Thread elevatorRunThread = new Thread(elevatorRunnable);
-		elevatorRunThread.start();
+		// Rider 1 from floor 2 => 6
+		elevator.addFloorStop(2, Direction.UP);
+		elevator.addFloorStop(6, Direction.UP);
 		
-		// Add stop requests while elevator is in motion
-		elevator.addFloorStop(2);
-		elevator.addFloorStop(6);
-		elevator.addFloorStop(1);
-		elevator.addFloorStop(12);
-		elevator.addFloorStop(15);
-		elevator.addFloorStop(7);
+		// Rider 2 from floor 5 => 10
+		elevator.addFloorStop(5, Direction.UP);
+		elevator.addFloorStop(10, Direction.UP);
 		
-		Thread.sleep(500);
-		elevator.addFloorStop(8);
-		elevator.addFloorStop(3);
-		elevator.addFloorStop(16);
+		// Rider 3 from floor 12 => 9
+		elevator.addFloorStop(12, Direction.DOWN);
+		elevator.addFloorStop(9, Direction.DOWN);
+		
+		// Rider 4 from floor 14 => 16
+		elevator.addFloorStop(14, Direction.UP);
+		elevator.addFloorStop(16, Direction.UP);
+		
+		elevator.run();
 	}
 }
