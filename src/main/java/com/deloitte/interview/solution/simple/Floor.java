@@ -9,7 +9,6 @@ package com.deloitte.interview.solution.simple;
  */
 public class Floor {
 	private int number;
-	private boolean stopRequested = false;
 	
 	public Floor(int number) {
 		this.number = number;
@@ -17,13 +16,5 @@ public class Floor {
 	
 	public int getNumber() {
 		return this.number;
-	}
-	
-	public boolean isStopRequested() {
-		return stopRequested;
-	}
-	
-	public void setStopRequested(boolean requested) {
-		stopRequested = requested;
 	}
 }

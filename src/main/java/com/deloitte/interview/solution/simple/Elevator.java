@@ -16,8 +16,6 @@ public class Elevator {
 	private Map<Integer, Direction> stops;
 	private int numFloors;
 	
-	private boolean doRun = false;
-
 	public Elevator(int numFloors) {
 		floors = new ArrayList<>();
 		stops = new HashMap<>();
@@ -35,15 +33,15 @@ public class Elevator {
 	}
 	
 	private void stopAtFloor(int floorNumber) {
-		System.out.println(String.format("This is floor %s. Doors opening.",
-				floorNumber));
+		System.out.println(String.format("This is floor %s. Doors "
+				+ "opening.", floorNumber));
 		System.out.println("Closing doors.");
 		
 		stops.remove(floorNumber);
 	}
 	
 	public void run() {
-		doRun = true;
+		boolean doRun = true;
 		
 		while (doRun) {
 			System.out.println("Going up!");
@@ -61,10 +59,6 @@ public class Elevator {
 			}
 			doRun = stops != null && stops.size() > 0;
 		}
-	}
-	
-	public void stop() {
-		doRun = false;
 	}
 	
 	public enum Direction {
