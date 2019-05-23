@@ -1,7 +1,7 @@
 package com.deloitte.interview.solution.simple;
 
 /**
- * This class represents a floor as unsed
+ * This class represents a floor as used
  * in a simple solution to the Elevator Conundrum
  * CDT interview problem
  * 
