@@ -1,4 +1,4 @@
-package com.deloitte.interview;
+package com.deloitte.interview.solution.advanced;
 
 /**
  * This enum details if the rider will enter or exit the

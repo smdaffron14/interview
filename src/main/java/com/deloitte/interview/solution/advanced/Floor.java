@@ -1,6 +1,6 @@
-package com.deloitte.interview;
+package com.deloitte.interview.solution.advanced;
 
-import com.deloitte.interview.Floor;
+import com.deloitte.interview.solution.advanced.Floor;
 
 /**
  * This class represents a floor in a building as leveraged in

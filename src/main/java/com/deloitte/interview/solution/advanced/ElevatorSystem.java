@@ -1,4 +1,4 @@
-package com.deloitte.interview;
+package com.deloitte.interview.solution.advanced;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

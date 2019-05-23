@@ -1,4 +1,4 @@
-package com.deloitte.interview;
+package com.deloitte.interview.solution.advanced;
 
 /**
  * Simple driver code that instantiates and runs the {@link ElevatorSystem}
@@ -7,8 +7,11 @@ package com.deloitte.interview;
  */
 public class App {
 	public static void main(String[] args) {
-		App app = new App();
-		app.runElevators();
+
+		int d = Double.valueOf(8.25 / 2).intValue();
+		System.out.println(d);
+		//		App app = new App();
+//		app.runElevators();
 	}
 
 	private void runElevators() {

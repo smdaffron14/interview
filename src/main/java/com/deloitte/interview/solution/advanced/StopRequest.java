@@ -1,4 +1,4 @@
-package com.deloitte.interview;
+package com.deloitte.interview.solution.advanced;
 
 /**
  * This class represents a request from a rider to stop at
