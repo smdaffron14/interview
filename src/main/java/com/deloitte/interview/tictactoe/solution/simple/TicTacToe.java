@@ -43,7 +43,7 @@ public class TicTacToe {
 	}
 	
 	private boolean isWin(PlayerMarker marker) {
-		// check straight lines
+		// check vertical straight lines
 		for (int x = 0; x < boardSize; x++) {
 			for (int y = 0; y < boardSize; y++) {
 				if (board[x][y] != marker) {
@@ -55,7 +55,19 @@ public class TicTacToe {
 			}
 		}
 		
-		// check horizontal, 0 to top-right
+		// check horizontal straight lines
+		for (int y = 0; y < boardSize; y++) {
+			for (int x = 0; x < boardSize; x++) {
+				if (board[x][y] != marker) {
+					break;
+				}
+				if (x == boardSize -1) {
+					return true;
+				}
+			}
+		}
+		
+		// check diagonal, 0 to top-right
 		for (int i = 0; i < boardSize; i++) {
 			if (board[i][i] != marker) {
 				break;
@@ -65,7 +77,7 @@ public class TicTacToe {
 			}
 		}
 		
-		// check horizontal, top-left to bottom-right
+		// check diagonal, top-left to bottom-right
 		for (int i = 0; i < boardSize; i++) {
 			if (board[i][boardSize - 1 - i] != marker) {
 				break;
